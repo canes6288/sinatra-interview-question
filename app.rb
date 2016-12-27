@@ -1,5 +1,5 @@
 require 'sinatra'
-require 'httparty'
+require 'json'
 require 'pry'
 
 # root
@@ -14,6 +14,7 @@ get 'favorites' do
 end
 
 get '/favorites' do
+  binding.pry
   file = JSON.parse(File.read('data.json'))
 
   unless params[:name] && params[:oid]
