@@ -17,9 +17,9 @@
 <script>
   document.addEventListener("DOMContentLoaded", function(event) {
 
-
-
     document.getElementById("submit").onclick = function() {
+
+      searchResultsDiv = document.getElementById("search-results").innerHTML = "<div id='search-results'></div>";
 
       var searchText = document.getElementById("search-field").value
       var searchQuery = searchText.split(' ').join('+')
