@@ -8,21 +8,22 @@ get '/' do
 end
 
 #
-get 'favorites' do
+get '/favorites' do
   response.header['Content-Type'] = 'application/json'
   File.read('data.json')
 end
 
-get '/favorites' do
-  binding.pry
+post '/favorites' do
+  File.write('data.json', '[]') if File.read('data.json').empty?
+
   file = JSON.parse(File.read('data.json'))
 
-  unless params[:name] && params[:oid]
+  unless params[:name] && params[:imdb_id]
     return 'Invalid Request'
   end
 
-  movie = { name: params[:name], oid: params[:oid] }
+  movie = { name: params[:name], imdb_id: params[:imdb_id] }
+
   file << movie
-  File.write('data.json',JSON.pretty_generate(file))
-  movie.to_json
+  File.write('data.json', JSON.pretty_generate(file))
 end
