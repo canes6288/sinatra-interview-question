@@ -23,8 +23,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
           var posterUrl = searchResults[i]["Poster"]
           var posterImage
 
+          // if the image doesn't exist on OMDB, then replace it with a 'Sorry, image doesn't exist' image.
           if (posterUrl == 'N/A' || posterUrl === 'undefined') {
-            posterImage = ""
+            posterImage = "<img class='poster' src='http://www.kalahandi.info/wp-content/uploads/2016/05/sorry-image-not-available.png'>"
           } else {
             posterImage = "<img class='poster' src='" + posterUrl + "'>"
           }
@@ -36,13 +37,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
           searchResultsDiv.innerHTML += resultDiv;
         };
 
-        // Need to add an event listener to each button.  Unable to do it in the loop above because it rebuilds the DOM, removing the event listeners except for the last one.
-
+        // Need to add an event listener to each button.  Unable to do it in the loop above because every time
+        // this line runs 'searchResultsDiv.innerHTML += resultDiv;' it rebuilds the HTML in the div, removing the event listeners except for the last one.
         var detailButtons = document.getElementsByClassName("details-btn")
 
         for (var i = 0; i < detailButtons.length; i++) {
           detailButtons[i].addEventListener('click', function() {
-            // Find the search result div based after the Details button is clicked.  If the first Details button is clicked, then this code will climb up the DOM and find the search result div.  We'll then replace the InnerHTML with details after the Details button is clicked.
+            // If the first Details button is clicked, then this code will climb up the DOM and find the search result div for that specific search result.
+            // We'll then replace the InnerHTML with details after the Details button is clicked.
             var searchResultDiv = this.parentElement.parentElement.parentElement.parentElement
 
             var imdbId = this.id
@@ -64,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 var posterImage;
 
                 if (posterUrl == 'N/A' || posterUrl === 'undefined') {
-                  posterImage = ""
+                  posterImage = "<img class='poster' src='http://www.kalahandi.info/wp-content/uploads/2016/05/sorry-image-not-available.png'>"
                 } else {
                   posterImage = "<img class='poster' src='" + posterUrl + "'>"
                 }
@@ -77,6 +79,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
           });
         };
 
+        // Find all the favorite buttons and empower them with javascript.
+        // A button will change colors, text, and request information after being clicked.
         var favoriteButtons = document.getElementsByClassName("favorite-btn")
 
         for (var i = 0; i < favoriteButtons.length; i++) {
@@ -111,7 +115,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
     searchRequest.send();
   };
 
-  // favorites list
+  // clear favorites list
+  document.getElementById("clear-favorites").onclick = function() {
+    var clearFavoriteRequest = new XMLHttpRequest();
+    clearFavoriteRequest.open('POST', '/clear-favorites', true);
+
+    clearFavoriteRequest.send();
+
+    document.getElementById("favorite-list").click()
+  }
+
+  // show favorites list
   document.getElementById("favorite-list").onclick = function() {
 
     var favoriteListRequest = new XMLHttpRequest();
@@ -119,12 +133,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     favoriteListRequest.onload = function() {
       if (favoriteListRequest.status >= 200 && favoriteListRequest.status < 400) {
-        searchResultsDiv = document.getElementById("search-results")
+        favoriteDiv = document.getElementById("search-results")
 
         // erase search results, and add 'Favorites' header to top of favorites list
-        searchResultsDiv.innerHTML = ("<h3 style='padding:40px;'>Favorites</h3>")
+        favoriteDiv.innerHTML = ("<h3 style='padding:40px;'>Favorites</h3>")
 
         var favoriteList = JSON.parse(favoriteListRequest.responseText);
+
+        // If no favorites have been selected, then it will show you text telling you so.
+        if (favoriteList.length == 0) {
+          favoriteDiv.innerHTML += ("<h4 style='padding:40px;'>You currently have no favorite movies!  Go search for your favorite movies and add them!</h4>")
+        };
 
         for (var i = 0; i < favoriteList.length; i++) {
           var title = favoriteList[i]["name"]
@@ -148,12 +167,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
               var posterImage;
 
               if (posterUrl == 'N/A' || posterUrl === 'undefined') {
-                posterImage = ""
+                posterImage = "<img class='poster' src='http://www.kalahandi.info/wp-content/uploads/2016/05/sorry-image-not-available.png'>"
               } else {
                 posterImage = "<img class='poster' src='" + posterUrl + "'>"
               }
 
-              searchResultsDiv.innerHTML += ("<div id='search-result["+ i +"]' class='row' style='padding:30px'><div class='col-md-4 col-sm-6'>" + posterImage + "</div><div class='col-md-8 col-sm-6 col-xs-12'><div class='jumbotron'><h4 id='title'>" + title + "</h4><h4>(" + year + ")</h4><hr/><h4>Rating</h4><p class='lead'>"+ rating +"</p><hr/><h4>Plot</h4><p class='lead'>"+ plot +"</p><hr/><h4>Awards</h4><p class='lead'>"+ awards +"</p><hr/><h4>Metascore Rating</h4><p class='lead'>"+ metascoreRating +"</p></div></div>")
+              favoriteDiv.innerHTML += ("<div id='search-result["+ i +"]' class='row' style='padding:30px'><div class='col-md-4 col-sm-6'>" + posterImage + "</div><div class='col-md-8 col-sm-6 col-xs-12'><div class='jumbotron'><h4 id='title'>" + title + "</h4><h4>(" + year + ")</h4><hr/><h4>Rating</h4><p class='lead'>"+ rating +"</p><hr/><h4>Plot</h4><p class='lead'>"+ plot +"</p><hr/><h4>Awards</h4><p class='lead'>"+ awards +"</p><hr/><h4>Metascore Rating</h4><p class='lead'>"+ metascoreRating +"</p></div></div>")
             };
           };
           detailsRequest.send();

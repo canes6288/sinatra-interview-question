@@ -27,3 +27,7 @@ post '/favorites' do
   file << movie
   File.write('data.json', JSON.pretty_generate(file))
 end
+
+post '/clear-favorites' do
+  File.write('data.json', '[]')
+end
