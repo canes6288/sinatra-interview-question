@@ -7,7 +7,7 @@
   <div class="row header-row">
     <div class="col-md-12">
       <div id="search">
-        <input type="text" class="search-query" id="search-field" placeholder="Search">
+        <input type="text" onkeydown="if (event.keyCode == 13) { document.getElementById('search-btn').click(); return false }" class="search-query" id="search-field" placeholder="Search">
         <button type="button" id="search-btn" class="btn btn-primary btn-lg">Search</button>
       </div>
     </div>
