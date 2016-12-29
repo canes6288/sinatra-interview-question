@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function(event) {
 
-  document.getElementById("submit").onclick = function() {
+  document.getElementById("search-btn").onclick = function() {
 
     searchResultsDiv = document.getElementById("search-results").innerHTML = "<div id='search-results'></div>";
 
